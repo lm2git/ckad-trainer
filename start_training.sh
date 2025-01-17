@@ -38,38 +38,54 @@ verify_solution() {
         return 0
     else
         red "❌ Incorrect. Try again."
+        echo -e "Expected Output:\n$expected_output"
+        echo -e "Your Output:\n$output"
         return 1
     fi
 }
 
-# File delle domande
-QUESTIONS_FILE="questions.txt"
+# Directory delle domande
+QUESTIONS_DIR="q-pool"
 
-# Verifica se il file esiste
-if [[ ! -f "$QUESTIONS_FILE" ]]; then
-    red "Error: The 'questions.txt' file does not exist."
+# Verifica se la directory esiste
+if [[ ! -d "$QUESTIONS_DIR" ]]; then
+    red "Error: The '$QUESTIONS_DIR' directory does not exist."
     exit 1
 fi
 
-# Leggi le domande dal file
-mapfile -t questions < <(awk -v RS= '{print > ("question" NR ".tmp")}' "$QUESTIONS_FILE")
+# Leggi i file delle domande
+question_files=("$QUESTIONS_DIR"/q*.txt)
 
-# Mescola l'ordine delle domande
-shuffled_questions=($(shuf -e "${questions[@]}"))
+# Verifica se ci sono file di domande
+if [[ ${#question_files[@]} -eq 0 ]]; then
+    red "Error: No question files found in '$QUESTIONS_DIR'."
+    exit 1
+fi
 
-# Ciclo attraverso le domande
-for question_data in "${shuffled_questions[@]}"; do
-    question=$(echo "$question_data" | grep '^question:' | cut -d ' ' -f 2-)
-    verify_command=$(echo "$question_data" | grep '^verify_command:' | cut -d ' ' -f 2-)
-    expected_output=$(echo "$question_data" | grep '^expected_output:' | cut -d ' ' -f 2-)
+# Mescola l'ordine dei file delle domande
+shuffled_question_files=($(shuf -e "${question_files[@]}"))
 
-    # Mostra la domanda
-    bold "\nQuestion: $question"
-    read -p "Press Enter after completing the solution..."
+# Ciclo attraverso i file delle domande
+for question_file in "${shuffled_question_files[@]}"; do
+    mapfile -t questions < <(awk -v RS= '{print > ("question" NR ".tmp")}' "$question_file")
+    
+    for question_data in "${questions[@]}"; do
+        question=$(echo "$question_data" | grep '^question:' | cut -d ' ' -f 2-)
+        verify_command=$(echo "$question_data" | grep '^verify_command:' | cut -d ' ' -f 2-)
+        expected_output=$(echo "$question_data" | grep '^expected_output:' | cut -d ' ' -f 2-)
 
-    # Verifica la soluzione
-    while ! verify_solution "$verify_command" "$expected_output"; do
-        read -p "Modify the solution and press Enter to verify again..."
+        # Mostra la domanda
+        bold "\nQuestion: $question"
+        read -p "Press Enter after completing the solution or type 'exit' to quit..."
+
+        # Verifica la soluzione
+        while ! verify_solution "$verify_command" "$expected_output"; do
+            read -p "Modify the solution and press Enter to verify again or type 'exit' to quit..."
+            if [[ $REPLY == "exit" ]]; then
+                red "Exiting..."
+                exit 0
+            fi
+        done
     done
 done
 
