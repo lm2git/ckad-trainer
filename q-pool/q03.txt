@@ -1,0 +1,119 @@
+question: Create a Pod named 'init-pod' with two init containers: the first runs 'busybox' and executes 'echo "Init 1"', and the second runs 'busybox' and executes 'echo "Init 2"'. The main container should use the 'nginx' image.
+verify_command: kubectl get pod init-pod -o jsonpath='{.spec.initContainers[*].image}'
+expected_output: busybox busybox
+
+question: Create a Pod named 'postgres-pod' that uses the 'postgres:13' image and sets the environment variable 'POSTGRES_PASSWORD' to 'secretpassword'.
+verify_command: kubectl get pod postgres-pod -o jsonpath='{.spec.containers[0].env[0].value}'
+expected_output: secretpassword
+
+question: Create a Pod named 'multi-port-pod' that exposes two ports: 80 and 443.
+verify_command: kubectl get pod multi-port-pod -o jsonpath='{.spec.containers[0].ports[*].containerPort}'
+expected_output: 80 443
+
+question: Create a Pod named 'node-affinity-pod' that prefers to run on nodes with the label 'disktype=ssd'.
+verify_command: kubectl get pod node-affinity-pod -o jsonpath='{.spec.affinity.nodeAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].preference.matchExpressions[0].key}'
+expected_output: disktype
+
+question: Create a Pod named 'anti-affinity-pod' that avoids running on nodes where other Pods with the label 'app=web' are running.
+verify_command: kubectl get pod anti-affinity-pod -o jsonpath='{.spec.affinity.podAntiAffinity.requiredDuringSchedulingIgnoredDuringExecution[0].labelSelector.matchLabels.app}'
+expected_output: web
+
+question: Create a Pod named 'resource-quota-pod' that requests 500m CPU and 512Mi memory, and sets limits of 1 CPU and 1Gi memory.
+verify_command: kubectl get pod resource-quota-pod -o jsonpath='{.spec.containers[0].resources.requests.cpu}'
+expected_output: 500m
+
+question: Create a Pod named 'security-context-pod' that runs as user 1000, group 2000, and disables privilege escalation.
+verify_command: kubectl get pod security-context-pod -o jsonpath='{.spec.containers[0].securityContext.allowPrivilegeEscalation}'
+expected_output: false
+
+question: Create a Pod named 'capabilities-pod' that adds the 'NET_ADMIN' capability and drops the 'CHOWN' capability.
+verify_command: kubectl get pod capabilities-pod -o jsonpath='{.spec.containers[0].securityContext.capabilities.add[0]}'
+expected_output: NET_ADMIN
+
+question: Create a Pod named 'hostpath-pod' that mounts a hostPath volume at '/var/log' and sets it to read-only.
+verify_command: kubectl get pod hostpath-pod -o jsonpath='{.spec.volumes[0].hostPath.path}'
+expected_output: /var/log
+
+question: Create a Pod named 'projected-volume-pod' that mounts a projected volume containing a Secret, a ConfigMap, and a Downward API volume.
+verify_command: kubectl get pod projected-volume-pod -o jsonpath='{.spec.volumes[0].projected.sources[0].secret.name}'
+expected_output: my-secret
+
+question: Create a Pod named 'downwardapi-pod' that exposes the Pod's IP address as an environment variable.
+verify_command: kubectl get pod downwardapi-pod -o jsonpath='{.spec.containers[0].env[0].valueFrom.fieldRef.fieldPath}'
+expected_output: status.podIP
+
+question: Create a Pod named 'liveness-pod' that uses the 'nginx' image and configures a liveness probe to check the '/healthz' endpoint on port 8080.
+verify_command: kubectl get pod liveness-pod -o jsonpath='{.spec.containers[0].livenessProbe.httpGet.port}'
+expected_output: 8080
+
+question: Create a Pod named 'readiness-pod' that uses the 'nginx' image and configures a readiness probe to check the '/ready' endpoint on port 80.
+verify_command: kubectl get pod readiness-pod -o jsonpath='{.spec.containers[0].readinessProbe.httpGet.port}'
+expected_output: 80
+
+question: Create a Pod named 'startup-pod' that uses the 'nginx' image and configures a startup probe to check the '/started' endpoint on port 80.
+verify_command: kubectl get pod startup-pod -o jsonpath='{.spec.containers[0].startupProbe.httpGet.port}'
+expected_output: 80
+
+question: Create a Pod named 'ephemeral-storage-pod' that sets a request of 1Gi and a limit of 2Gi for ephemeral storage.
+verify_command: kubectl get pod ephemeral-storage-pod -o jsonpath='{.spec.containers[0].resources.requests.ephemeral-storage}'
+expected_output: 1Gi
+
+question: Create a Pod named 'sysctl-pod' that sets the sysctl 'net.ipv4.tcp_keepalive_time' to 300.
+verify_command: kubectl get pod sysctl-pod -o jsonpath='{.spec.securityContext.sysctls[0].name}'
+expected_output: net.ipv4.tcp_keepalive_time
+
+question: Create a Pod named 'apparmor-pod' that uses the AppArmor profile 'localhost/k8s-apparmor-example-deny-write'.
+verify_command: kubectl get pod apparmor-pod -o jsonpath='{.metadata.annotations.container\.apparmor\.security\.beta\.kubernetes\.io/main}'
+expected_output: localhost/k8s-apparmor-example-deny-write
+
+question: Create a Pod named 'seccomp-pod' that uses the 'runtime/default' seccomp profile.
+verify_command: kubectl get pod seccomp-pod -o jsonpath='{.spec.securityContext.seccompProfile.type}'
+expected_output: RuntimeDefault
+
+question: Create a Pod named 'privileged-pod' that runs in privileged mode and mounts the host's '/dev' directory.
+verify_command: kubectl get pod privileged-pod -o jsonpath='{.spec.containers[0].securityContext.privileged}'
+expected_output: true
+
+question: Create a Pod named 'hostnetwork-pod' that uses the host's network namespace and exposes port 80.
+verify_command: kubectl get pod hostnetwork-pod -o jsonpath='{.spec.hostNetwork}'
+expected_output: true
+
+question: Create a Pod named 'hostpid-pod' that uses the host's PID namespace.
+verify_command: kubectl get pod hostpid-pod -o jsonpath='{.spec.hostPID}'
+expected_output: true
+
+question: Create a Pod named 'hostipc-pod' that uses the host's IPC namespace.
+verify_command: kubectl get pod hostipc-pod -o jsonpath='{.spec.hostIPC}'
+expected_output: true
+
+question: Create a Pod named 'readonlyrootfs-pod' that mounts the root filesystem as read-only.
+verify_command: kubectl get pod readonlyrootfs-pod -o jsonpath='{.spec.containers[0].securityContext.readOnlyRootFilesystem}'
+expected_output: true
+
+question: Create a Pod named 'toleration-pod' that tolerates the taint 'key=value:NoExecute' for 300 seconds.
+verify_command: kubectl get pod toleration-pod -o jsonpath='{.spec.tolerations[0].tolerationSeconds}'
+expected_output: 300
+
+question: Create a Pod named 'custom-scheduler-pod' that uses a custom scheduler named 'my-scheduler'.
+verify_command: kubectl get pod custom-scheduler-pod -o jsonpath='{.spec.schedulerName}'
+expected_output: my-scheduler
+
+question: Create a Pod named 'topology-spread-pod' that spreads across zones with a max skew of 1.
+verify_command: kubectl get pod topology-spread-pod -o jsonpath='{.spec.topologySpreadConstraints[0].maxSkew}'
+expected_output: 1
+
+question: Create a Pod named 'pod-dns-config' that uses a custom DNS policy and sets DNS nameservers to '8.8.8.8'.
+verify_command: kubectl get pod pod-dns-config -o jsonpath='{.spec.dnsConfig.nameservers[0]}'
+expected_output: 8.8.8.8
+
+question: Create a Pod named 'pod-dns-policy' that uses the 'None' DNS policy.
+verify_command: kubectl get pod pod-dns-policy -o jsonpath='{.spec.dnsPolicy}'
+expected_output: None
+
+question: Create a Pod named 'pod-hostaliases' that adds a host alias 'app.local' pointing to '10.1.2.3'.
+verify_command: kubectl get pod pod-hostaliases -o jsonpath='{.spec.hostAliases[0].ip}'
+expected_output: 10.1.2.3
+
+question: Create a Pod named 'pod-lifecycle' that runs a pre-stop hook to execute 'echo "Goodbye!"' before termination.
+verify_command: kubectl get pod pod-lifecycle -o jsonpath='{.spec.containers[0].lifecycle.preStop.exec.command[0]}'
+expected_output: echo
