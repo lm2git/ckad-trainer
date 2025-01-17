@@ -10,10 +10,6 @@ question: Create a ConfigMap named 'app-config' with the key-value pair 'LOG_LEV
 verify_command: kubectl get configmap app-config -o jsonpath='{.data.LOG_LEVEL}'
 expected_output: DEBUG
 
-question: Create a Secret named 'db-credentials' with the key-value pair 'username=admin'.
-verify_command: kubectl get secret db-credentials -o jsonpath='{.data.username}' | base64 --decode
-expected_output: admin
-
 question: Create a Pod named 'app-pod' that mounts the ConfigMap 'app-config' and the Secret 'db-credentials' as environment variables.
 verify_command: kubectl get pod app-pod -o jsonpath='{.spec.containers[0].envFrom[0].configMapRef.name}'
 expected_output: app-config
