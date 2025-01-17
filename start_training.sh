@@ -80,7 +80,11 @@ shuffled_question_files=($(shuffle_array "${question_files[@]}"))
 
 # Ciclo attraverso i file delle domande
 for question_file in "${shuffled_question_files[@]}"; do
-    mapfile -t questions < <(awk -v RS= '{print > ("question" NR ".tmp")}' "$question_file")
+    # Leggi le domande dal file senza usare mapfile
+    questions=()
+    while IFS= read -r line; do
+        questions+=("$line")
+    done < <(awk -v RS= '{print}' "$question_file")
     
     for question_data in "${questions[@]}"; do
         question=$(echo "$question_data" | grep '^question:' | cut -d ' ' -f 2-)
