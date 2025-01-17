@@ -1,0 +1,199 @@
+question: Create a Pod named 'busybox-pod' using the 'busybox' image and run the command 'sleep 3600'.
+verify_command: kubectl get pod busybox-pod -o jsonpath='{.spec.containers[0].command[0]}'
+expected_output: sleep
+
+question: Create a Deployment named 'frontend' with 4 replicas, using the 'nginx:1.23' image.
+verify_command: kubectl get deployment frontend -o jsonpath='{.spec.replicas}'
+expected_output: 4
+
+question: Create a ConfigMap named 'env-config' with the key-value pair 'ENVIRONMENT=production'.
+verify_command: kubectl get configmap env-config -o jsonpath='{.data.ENVIRONMENT}'
+expected_output: production
+
+question: Create a Service named 'backend-service' of type 'ClusterIP' that exposes port 8080.
+verify_command: kubectl get service backend-service -o jsonpath='{.spec.ports[0].port}'
+expected_output: 8080
+
+question: Create an Ingress named 'app-ingress' that routes traffic to the Service 'backend-service' on the path '/api'.
+verify_command: kubectl get ingress app-ingress -o jsonpath='{.spec.rules[0].http.paths[0].path}'
+expected_output: /api
+
+question: Create a PersistentVolume named 'data-pv' with a capacity of 5Gi and access mode 'ReadWriteOnce'.
+verify_command: kubectl get pv data-pv -o jsonpath='{.spec.capacity.storage}'
+expected_output: 5Gi
+
+question: Create a PersistentVolumeClaim named 'data-pvc' that requests 3Gi of storage.
+verify_command: kubectl get pvc data-pvc -o jsonpath='{.status.phase}'
+expected_output: Bound
+
+question: Create a Pod named 'data-pod' that mounts the PersistentVolumeClaim 'data-pvc' at '/mnt/data'.
+verify_command: kubectl get pod data-pod -o jsonpath='{.spec.volumes[0].persistentVolumeClaim.claimName}'
+expected_output: data-pvc
+
+question: Create a Job named 'batch-job' that uses the 'busybox' image and runs the command 'echo "Job completed"'.
+verify_command: kubectl get job batch-job -o jsonpath='{.status.succeeded}'
+expected_output: 1
+
+question: Create a CronJob named 'cleanup-job' that runs every hour, using the 'busybox' image and the command 'echo "Cleaning up..."'.
+verify_command: kubectl get cronjob cleanup-job -o jsonpath='{.spec.schedule}'
+expected_output: 0 * * * *
+
+question: Create a Pod named 'multi-container-pod' with two containers: one using the 'nginx' image and the other using the 'redis' image.
+verify_command: kubectl get pod multi-container-pod -o jsonpath='{.spec.containers[*].image}'
+expected_output: nginx redis
+
+question: Create a Deployment named 'redis-deploy' with 3 replicas, using the 'redis:7.0' image, and set a CPU limit of 1 core.
+verify_command: kubectl get deployment redis-deploy -o jsonpath='{.spec.template.spec.containers[0].resources.limits.cpu}'
+expected_output: 1
+
+question: Create a Service of type 'NodePort' named 'redis-service' that exposes the Deployment 'redis-deploy' on port 6379.
+verify_command: kubectl get service redis-service -o jsonpath='{.spec.ports[0].port}'
+expected_output: 6379
+
+question: Create a Pod named 'init-pod' with an init container using the 'busybox' image and a main container using the 'nginx' image.
+verify_command: kubectl get pod init-pod -o jsonpath='{.spec.initContainers[0].image}'
+expected_output: busybox
+
+question: Create a Pod named 'security-pod' that uses the 'nginx' image and sets the security context to run as user ID 1000.
+verify_command: kubectl get pod security-pod -o jsonpath='{.spec.securityContext.runAsUser}'
+expected_output: 1000
+
+question: Create a Pod named 'liveness-pod' that uses the 'nginx' image and configures a liveness probe on port 80.
+verify_command: kubectl get pod liveness-pod -o jsonpath='{.spec.containers[0].livenessProbe.httpGet.port}'
+expected_output: 80
+
+question: Create a Pod named 'readiness-pod' that uses the 'nginx' image and configures a readiness probe on port 80.
+verify_command: kubectl get pod readiness-pod -o jsonpath='{.spec.containers[0].readinessProbe.httpGet.port}'
+expected_output: 80
+
+question: Create a Pod named 'resource-pod' that uses the 'nginx' image and sets a memory limit of 512Mi and a CPU request of 250m.
+verify_command: kubectl get pod resource-pod -o jsonpath='{.spec.containers[0].resources.limits.memory}'
+expected_output: 512Mi
+
+question: Create a Namespace named 'testing'.
+verify_command: kubectl get namespace testing -o jsonpath='{.metadata.name}'
+expected_output: testing
+
+question: Create a Role named 'pod-viewer' that allows listing and getting Pods in the 'testing' namespace.
+verify_command: kubectl get role pod-viewer -n testing -o jsonpath='{.rules[0].resources[0]}'
+expected_output: pods
+
+question: Create a RoleBinding named 'view-pods' that binds the 'pod-viewer' Role to the user 'alice' in the 'testing' namespace.
+verify_command: kubectl get rolebinding view-pods -n testing -o jsonpath='{.roleRef.name}'
+expected_output: pod-viewer
+
+question: Create a CustomResourceDefinition (CRD) named 'cronjobs.stable.example.com'.
+verify_command: kubectl get crd cronjobs.stable.example.com -o jsonpath='{.metadata.name}'
+expected_output: cronjobs.stable.example.com
+
+question: Create a StatefulSet named 'web' with 2 replicas, using the 'nginx:1.23' image.
+verify_command: kubectl get statefulset web -o jsonpath='{.spec.replicas}'
+expected_output: 2
+
+question: Create a Pod named 'sidecar-pod' with a main container using the 'nginx' image and a sidecar container using the 'busybox' image.
+verify_command: kubectl get pod sidecar-pod -o jsonpath='{.spec.containers[*].image}'
+expected_output: nginx busybox
+
+question: Create a Pod named 'hostpath-pod' that mounts a hostPath volume at '/var/log'.
+verify_command: kubectl get pod hostpath-pod -o jsonpath='{.spec.volumes[0].hostPath.path}'
+expected_output: /var/log
+
+question: Create a Pod named 'env-pod' that sets the environment variable 'APP_MODE=development'.
+verify_command: kubectl get pod env-pod -o jsonpath='{.spec.containers[0].env[0].value}'
+expected_output: development
+
+question: Create a Pod named 'command-pod' that runs the command 'echo "Hello, CKAD!"' using the 'busybox' image.
+verify_command: kubectl get pod command-pod -o jsonpath='{.spec.containers[0].command[0]}'
+expected_output: echo
+
+question: Create a Pod named 'args-pod' that runs the command 'sleep 3600' using the 'busybox' image.
+verify_command: kubectl get pod args-pod -o jsonpath='{.spec.containers[0].args[0]}'
+expected_output: sleep
+
+question: Create a Pod named 'limits-pod' that sets a CPU limit of 2 and a memory limit of 1Gi.
+verify_command: kubectl get pod limits-pod -o jsonpath='{.spec.containers[0].resources.limits.cpu}'
+expected_output: 2
+
+question: Create a Pod named 'requests-pod' that sets a CPU request of 500m and a memory request of 256Mi.
+verify_command: kubectl get pod requests-pod -o jsonpath='{.spec.containers[0].resources.requests.cpu}'
+expected_output: 500m
+
+question: Create a Pod named 'node-selector-pod' that runs on nodes with the label 'env=dev'.
+verify_command: kubectl get pod node-selector-pod -o jsonpath='{.spec.nodeSelector.env}'
+expected_output: dev
+
+question: Create a Pod named 'affinity-pod' that prefers to run on nodes with the label 'region=us-east'.
+verify_command: kubectl get pod affinity-pod -o jsonpath='{.spec.affinity.nodeAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].preference.matchExpressions[0].key}'
+expected_output: region
+
+question: Create a Pod named 'toleration-pod' that tolerates the taint 'app=critical:NoSchedule'.
+verify_command: kubectl get pod toleration-pod -o jsonpath='{.spec.tolerations[0].key}'
+expected_output: app
+
+question: Create a Pod named 'security-context-pod' that runs as user 2000 and group 3000.
+verify_command: kubectl get pod security-context-pod -o jsonpath='{.spec.securityContext.runAsUser}'
+expected_output: 2000
+
+question: Create a Pod named 'capabilities-pod' that adds the 'SYS_TIME' capability.
+verify_command: kubectl get pod capabilities-pod -o jsonpath='{.spec.containers[0].securityContext.capabilities.add[0]}'
+expected_output: SYS_TIME
+
+question: Create a Pod named 'hostnetwork-pod' that uses the host's network namespace.
+verify_command: kubectl get pod hostnetwork-pod -o jsonpath='{.spec.hostNetwork}'
+expected_output: true
+
+question: Create a Pod named 'hostpid-pod' that uses the host's PID namespace.
+verify_command: kubectl get pod hostpid-pod -o jsonpath='{.spec.hostPID}'
+expected_output: true
+
+question: Create a Pod named 'hostipc-pod' that uses the host's IPC namespace.
+verify_command: kubectl get pod hostipc-pod -o jsonpath='{.spec.hostIPC}'
+expected_output: true
+
+question: Create a Pod named 'privileged-pod' that runs in privileged mode.
+verify_command: kubectl get pod privileged-pod -o jsonpath='{.spec.containers[0].securityContext.privileged}'
+expected_output: true
+
+question: Create a Pod named 'readonlyrootfs-pod' that mounts the root filesystem as read-only.
+verify_command: kubectl get pod readonlyrootfs-pod -o jsonpath='{.spec.containers[0].securityContext.readOnlyRootFilesystem}'
+expected_output: true
+
+question: Create a Pod named 'seccomp-pod' that uses the 'runtime/default' seccomp profile.
+verify_command: kubectl get pod seccomp-pod -o jsonpath='{.spec.securityContext.seccompProfile.type}'
+expected_output: RuntimeDefault
+
+question: Create a Pod named 'apparmor-pod' that uses the 'localhost/k8s-apparmor-example-deny-write' AppArmor profile.
+verify_command: kubectl get pod apparmor-pod -o jsonpath='{.metadata.annotations.container\.apparmor\.security\.beta\.kubernetes\.io/main}'
+expected_output: localhost/k8s-apparmor-example-deny-write
+
+question: Create a Pod named 'sysctl-pod' that sets the sysctl 'net.ipv4.tcp_keepalive_time' to 300.
+verify_command: kubectl get pod sysctl-pod -o jsonpath='{.spec.securityContext.sysctls[0].name}'
+expected_output: net.ipv4.tcp_keepalive_time
+
+question: Create a Pod named 'downwardapi-pod' that exposes the Pod's namespace as an environment variable.
+verify_command: kubectl get pod downwardapi-pod -o jsonpath='{.spec.containers[0].env[0].valueFrom.fieldRef.fieldPath}'
+expected_output: metadata.namespace
+
+question: Create a Pod named 'projected-volume-pod' that mounts a projected volume containing a Secret and a ConfigMap.
+verify_command: kubectl get pod projected-volume-pod -o jsonpath='{.spec.volumes[0].projected.sources[0].secret.name}'
+expected_output: my-secret
+
+question: Create a Pod named 'ephemeral-volume-pod' that mounts an ephemeral volume.
+verify_command: kubectl get pod ephemeral-volume-pod -o jsonpath='{.spec.volumes[0].emptyDir.medium}'
+expected_output: ""
+
+question: Create a Pod named 'configmap-volume-pod' that mounts a ConfigMap as a volume.
+verify_command: kubectl get pod configmap-volume-pod -o jsonpath='{.spec.volumes[0].configMap.name}'
+expected_output: my-configmap
+
+question: Create a Pod named 'secret-volume-pod' that mounts a Secret as a volume.
+verify_command: kubectl get pod secret-volume-pod -o jsonpath='{.spec.volumes[0].secret.secretName}'
+expected_output: my-secret
+
+question: Create a Pod named 'downwardapi-volume-pod' that mounts a Downward API volume.
+verify_command: kubectl get pod downwardapi-volume-pod -o jsonpath='{.spec.volumes[0].downwardAPI.items[0].fieldRef.fieldPath}'
+expected_output: metadata.labels
+
+question: Create a Pod named 'empty-dir-pod' that mounts an emptyDir volume.
+verify_command: kubectl get pod empty-dir-pod -o jsonpath='{.spec.volumes[0].emptyDir.medium}'
+expected_output: ""
