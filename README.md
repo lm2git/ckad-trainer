@@ -41,11 +41,11 @@ Welcome to the **CKAD Trainer**! This is an interactive simulator designed to he
 
 3. Make the script executable:
    ```bash
-   chmod +x ckad-trainer.sh
+   chmod +x start_training.sh
    ```
 4. Run the simulator:
    ```bash
-   ./ckad-trainer.sh
+   ./start_training.sh
    ```
 
 ## Contributing
