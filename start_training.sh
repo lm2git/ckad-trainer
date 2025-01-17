@@ -80,16 +80,22 @@ shuffled_question_files=($(shuffle_array "${question_files[@]}"))
 
 # Ciclo attraverso i file delle domande
 for question_file in "${shuffled_question_files[@]}"; do
-    # Leggi le domande dal file senza usare mapfile
+    # Leggi le domande dal file
     questions=()
     while IFS= read -r line; do
-        questions+=("$line")
-    done < <(awk -v RS= '{print}' "$question_file")
+        if [[ "$line" =~ ^question: ]]; then
+            current_question="${line#question: }"
+        elif [[ "$line" =~ ^verify_command: ]]; then
+            current_verify_command="${line#verify_command: }"
+        elif [[ "$line" =~ ^expected_output: ]]; then
+            current_expected_output="${line#expected_output: }"
+            # Aggiungi la domanda completa all'array
+            questions+=("$current_question|$current_verify_command|$current_expected_output")
+        fi
+    done < "$question_file"
     
     for question_data in "${questions[@]}"; do
-        question=$(echo "$question_data" | grep '^question:' | cut -d ' ' -f 2-)
-        verify_command=$(echo "$question_data" | grep '^verify_command:' | cut -d ' ' -f 2-)
-        expected_output=$(echo "$question_data" | grep '^expected_output:' | cut -d ' ' -f 2-)
+        IFS='|' read -r question verify_command expected_output <<< "$question_data"
 
         # Mostra la domanda
         bold "\nQuestion: $question"
