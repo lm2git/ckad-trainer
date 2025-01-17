@@ -44,6 +44,19 @@ verify_solution() {
     fi
 }
 
+# Funzione per mescolare un array
+shuffle_array() {
+    local input_array=("$@")
+    local shuffled_array=()
+    local indices=($(seq 0 $((${#input_array[@]} - 1)) | awk 'BEGIN {srand()} {print rand() "\t" $0}' | sort -k1,1n | cut -f2-))
+
+    for i in "${indices[@]}"; do
+        shuffled_array+=("${input_array[$i]}")
+    done
+
+    echo "${shuffled_array[@]}"
+}
+
 # Directory delle domande
 QUESTIONS_DIR="q-pool"
 
@@ -63,7 +76,7 @@ if [[ ${#question_files[@]} -eq 0 ]]; then
 fi
 
 # Mescola l'ordine dei file delle domande
-shuffled_question_files=($(shuf -e "${question_files[@]}"))
+shuffled_question_files=($(shuffle_array "${question_files[@]}"))
 
 # Ciclo attraverso i file delle domande
 for question_file in "${shuffled_question_files[@]}"; do
