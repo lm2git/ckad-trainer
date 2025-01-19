@@ -46,9 +46,9 @@ question: Create a Service of type 'ClusterIP' named 'redis-service' that expose
 verify_command: kubectl get service redis-service -o jsonpath='{.spec.ports[0].port}'
 expected_output: 6379
 
-question: Create a Pod named 'init-pod' with an init container using the 'busybox' image and a main container using the 'nginx' image.
+question: Create a Pod named 'init-pod' with an init container using the 'busybox:latest' image and a main container using the 'nginx' image.
 verify_command: kubectl get pod init-pod -o jsonpath='{.spec.initContainers[0].image}'
-expected_output: busybox
+expected_output: busybox:latest
 
 question: Create a Pod named 'security-pod' that uses the 'nginx' image and sets the security context to run as user ID 1000.
 verify_command: kubectl get pod security-pod -o jsonpath='{.spec.securityContext.runAsUser}'
