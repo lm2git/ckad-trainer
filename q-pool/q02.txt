@@ -54,7 +54,7 @@ question: Create a Pod named 'security-pod' that uses the 'nginx' image and sets
 verify_command: kubectl get pod security-pod -o jsonpath='{.spec.securityContext.runAsUser}'
 expected_output: 1000
 
-question: Create a Pod named 'liveness-pod' that uses the 'nginx' image and configures a liveness probe on port 80.
+question: Create a Pod named 'liveness-pod' that uses the 'nginx' image and configures a liveness httpGet probe on port 80.
 verify_command: kubectl get pod liveness-pod -o jsonpath='{.spec.containers[0].livenessProbe.httpGet.port}'
 expected_output: 80
 
