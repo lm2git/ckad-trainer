@@ -42,7 +42,7 @@ question: Create a Deployment named 'redis-deploy' with 3 replicas, using the 'r
 verify_command: kubectl get deployment redis-deploy -o jsonpath='{.spec.template.spec.containers[0].resources.limits.cpu}'
 expected_output: 1
 
-question: Create a Service of type 'NodePort' named 'redis-service' that exposes the Deployment 'redis-deploy' on port 6379.
+question: Create a Service of type 'ClusterIP' named 'redis-service' that exposes the Deployment 'redis-deploy' on port 6379.
 verify_command: kubectl get service redis-service -o jsonpath='{.spec.ports[0].port}'
 expected_output: 6379
 
